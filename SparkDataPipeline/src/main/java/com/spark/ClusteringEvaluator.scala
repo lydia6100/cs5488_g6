@@ -10,37 +10,25 @@ object ClusteringEvaluator {
    * Uses WSSSE (Within Set Sum of Squared Errors) to evaluate different values of K.
    *
    * @param tfIdf The RDD of TF-IDF vectors.
-   * @param sc    The SparkContext.
    * @return The optimal number of clusters (K).
    */
-  def determineOptimalK(tfIdf: RDD[org.apache.spark.mllib.linalg.Vector], sc: SparkContext): Int = {
+  def determineOptimalK(tfIdf: RDD[org.apache.spark.mllib.linalg.Vector]): Int = {
     println("[determineOptimalK] Determining the optimal K value")
 
-    println("Determining the optimal K value...")
+    // 创建 K 值的集合并使用 Scala 并行集合来进行并行处理
+    val ks = (2 to 20).par
 
-    // 将 RDD 持久化以提升多次操作的性能
-    tfIdf.persist(org.apache.spark.storage.StorageLevel.MEMORY_AND_DISK)
-
-    val ks = (2 to 5)
-    var optimalK = 2
-    var minWSSSE = Double.MaxValue
-
-    for (k <- ks) {
-      val kmeans = new KMeans()
-        .setK(k)
-        .setSeed(1L)
-        .setMaxIterations(10)
-
+    // 并行计算每个 K 值的 WSSSE
+    val wssseValues = ks.map { k =>
+      val kmeans = new KMeans().setK(k).setSeed(1L)
       val model = kmeans.run(tfIdf)
       val wssse = model.computeCost(tfIdf)
       println(s"K = $k, WSSSE = $wssse")
+      (k, wssse)
+    }.toList
 
-      if (wssse < minWSSSE) {
-        minWSSSE = wssse
-        optimalK = k
-      }
-    }
-
+    // 找到 WSSSE 最小的 K
+    val (optimalK, minWSSSE) = wssseValues.minBy(_._2)
     println(s"Optimal K value determined: $optimalK")
 
     // 释放 RDD 缓存

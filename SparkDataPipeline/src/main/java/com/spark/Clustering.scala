@@ -28,32 +28,30 @@ object Clustering {
   }
 
   /**
-   * Outputs the cluster predictions for each document.
-   * Each document is mapped to its respective cluster, along with the keywords and their scores.
+   * Outputs the cluster predictions along with the keywords, scores, and assigned cluster.
    *
-   * @param filteredRDD The filtered RDD containing sequences of words.
-   * @param tfIdf       The RDD of TF-IDF vectors.
-   * @param model       The trained KMeans model.
-   * @param fileName    The name of the JSON file being processed (used for output file naming).
+   * @param vocabDict The vocabulary dictionary (index -> term).
+   * @param tfIdf     The RDD of TF-IDF vectors.
+   * @param model     The trained KMeans model.
+   * @param fileName  The output file name.
    */
-  def outputClusterPredictions(filteredRDD: RDD[Seq[String]], tfIdf: RDD[org.apache.spark.mllib.linalg.Vector], model: KMeansModel, fileName: String): Unit = {
+  def outputClusterPredictions(vocabDict: Map[Int, String], tfIdf: RDD[org.apache.spark.mllib.linalg.Vector], model: KMeansModel, fileName: String): Unit = {
     println("[outputClusterPredictions] Outputting cluster predictions")
-    val keywordsWithScoresRDD = tfIdf.zip(filteredRDD).map { case (vector, keywords) =>
-      val scores = vector.toArray
-      (keywords, scores)
-    }
 
-    // 预测每篇文章的簇并生成 JSON
-    val predictions = keywordsWithScoresRDD.map { case (keywords, scores) =>
-      val cluster = model.predict(Vectors.dense(scores))
+    val predictions = tfIdf.map { vector =>
+      val cluster = model.predict(vector)
+      val keywordsWithScores = vector.toArray.zipWithIndex
+        .filter { case (score, _) => score > 0 }
+        .map { case (score, index) => (vocabDict.getOrElse(index, ""), score) }
+
       Map(
-        "keywords" -> keywords,
-        "scores" -> scores,
+        "keywords" -> keywordsWithScores.map(_._1),
+        "scores" -> keywordsWithScores.map(_._2),
         "cluster" -> cluster
       )
     }
 
-    // 将 JSON 结果保存到文件
+    // Save JSON results to file
     val outputPath = s"D:\\Code\\OtherProject\\cs5488_g6\\SparkDataPipeline\\src\\main\\resources\\output\\${fileName}.json"
     val jsonStrings = predictions.collect().map { prediction =>
       implicit val formats: DefaultFormats.type = DefaultFormats
