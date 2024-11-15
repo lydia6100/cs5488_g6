@@ -1,0 +1,55 @@
+# Ignore all JSON files
+*.json
+
+# Maven specific
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Eclipse specific
+.project
+.classpath
+.settings/
+.metadata/
+bin/
+tmp/
+
+# IntelliJ IDEA specific
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# NetBeans specific
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# VS Code specific
+.vscode/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+__MACOSX/
+
+# Log files
+*.log
+
+# Miscellaneous
+*.swp
+*.swo
+*~
