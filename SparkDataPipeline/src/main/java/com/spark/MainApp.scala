@@ -23,11 +23,11 @@ object MainApp {
       .getOrCreate()
 
     // Step 2: 获取所有 JSON 文件的路径 (使用绝对路径)
-    val resourcePath = new File("D:\\Code\\OtherProject\\cs5488_g6\\SparkDataPipeline\\src\\main\\resources\\input")
+    val resourcePath = new File("D:\\Code\\OtherProject\\cs5488_g6\\SparkDataPipeline\\src\\main\\resources\\test_input")
     val jsonFiles = resourcePath.listFiles.filter(_.getName.endsWith(".json"))
 
-    // Step 3: 将处理每个 JSON 文件的操作顺序执行
-    jsonFiles.foreach { file =>
+    // Step 3: 将处理每个 JSON 文件的操作并行执行
+    jsonFiles.par.foreach { file =>
       JsonProcessor.processJsonFile(file, sc, spark)
     }
     // 停止 Spark 上下文

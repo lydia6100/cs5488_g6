@@ -52,7 +52,7 @@ object Clustering {
     }
 
     // Save JSON results to file
-    val outputPath = s"D:\\Code\\OtherProject\\cs5488_g6\\SparkDataPipeline\\src\\main\\resources\\output\\${fileName}.json"
+    val outputPath = s"D:\\Code\\OtherProject\\cs5488_g6\\SparkDataPipeline\\src\\main\\resources\\test_output\\${fileName}.json"
     val jsonStrings = predictions.collect().map { prediction =>
       implicit val formats: DefaultFormats.type = DefaultFormats
       Json(DefaultFormats).write(prediction)
