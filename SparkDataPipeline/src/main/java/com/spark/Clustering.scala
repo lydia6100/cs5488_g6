@@ -1,12 +1,7 @@
 package com.spark
 
 import org.apache.spark.mllib.clustering.{KMeans, KMeansModel}
-import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.rdd.RDD
-import org.json4s.DefaultFormats
-import org.json4s.jackson.Json
-
-import java.io.{File, PrintWriter}
 
 
 object Clustering {

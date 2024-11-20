@@ -1,11 +1,7 @@
 package com.spark
 
-import org.apache.spark.mllib.clustering.{KMeans, KMeansModel}
+import org.apache.spark.mllib.clustering.KMeans
 import org.apache.spark.rdd.RDD
-import org.apache.spark.mllib.linalg.{DenseVector, SparseVector, Vectors}
-import org.apache.spark.mllib.linalg.distributed.RowMatrix
-
-import java.io.{BufferedWriter, FileWriter, PrintWriter}
 
 object ClusteringEvaluatorPar {
   /**
