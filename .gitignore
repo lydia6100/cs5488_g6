@@ -1,5 +1,7 @@
 # Ignore all JSON files
 *.json
+*.csv
+*.drawio
 
 # Maven specific
 target/

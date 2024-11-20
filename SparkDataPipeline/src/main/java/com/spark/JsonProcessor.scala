@@ -1,10 +1,13 @@
 package com.spark
 
 import org.apache.spark.SparkContext
+import org.apache.spark.mllib.feature.PCA
+import org.apache.spark.mllib.linalg.{DenseVector, SparseVector, Vectors}
+import org.apache.spark.mllib.linalg.distributed.RowMatrix
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-import java.io.File
+import java.io.{BufferedWriter, File, FileWriter}
 
 object JsonProcessor {
   /**
@@ -37,12 +40,15 @@ object JsonProcessor {
 
     // Step7: 使用采样数据确定最佳 K 值
     val sampledTfIdf = tfIdf.sample(withReplacement = false, fraction = 0.5)
-    val optimalK = ClusteringEvaluator.determineOptimalK(sampledTfIdf)
+    val optimalK = ClusteringEvaluatorPar.determineOptimalK(sampledTfIdf)
 
     // Step 8: 使用最佳 K 值对完整数据进行聚类
     val model = Clustering.performKMeans(tfIdf, optimalK)
 
     // Step 9: 预测并输出结果
-    Clustering.outputClusterPredictions(vocabDict, tfIdf, model, fileName)
+    OutputHandler.outputClusterPredictions(vocabDict, tfIdf, model, fileName)
+
+    // Step 10: PCA 降维并保存聚类结果
+    OutputHandler.performPCAAndSaveResults(tfIdf, model, fileName)
   }
 }

@@ -40,20 +40,4 @@ object TfidfCalculator {
     }
     (filteredTfIdf, vocabDict)
   }
-
-  /**
-   * Converts the TF-IDF vectors back to RDD[Seq[(String, Double)]] format.
-   *
-   * @param vectors The RDD of TF-IDF vectors.
-   * @param vocab   The global vocabulary used to build the vectors.
-   * @return An RDD of sequences of (keyword, tf-idf value) pairs for each document.
-   */
-  def vectorsToSeq(vectors: RDD[org.apache.spark.mllib.linalg.Vector], vocab: Array[String]): RDD[Seq[(String, Double)]] = {
-    vectors.map { vector =>
-      vector.toArray.zipWithIndex
-        .filter { case (tfidfValue, _) => tfidfValue > 0 }
-        .map { case (tfidfValue, index) => (vocab(index), tfidfValue) }
-        .toSeq
-    }
-  }
 }

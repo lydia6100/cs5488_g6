@@ -5,6 +5,12 @@ import org.apache.spark.{SparkConf, SparkContext}
 
 import java.io.File
 
+object Config {
+  val inputPath: String = "D:\\Code\\OtherProject\\cs5488_g6\\SparkDataPipeline\\src\\main\\resources\\test_input"
+  val outputPath: String = "D:\\Code\\OtherProject\\cs5488_g6\\SparkDataPipeline\\src\\main\\resources\\test_output"
+  val clusterResultsPath: String = "_cluster_results.csv"
+}
+
 object MainApp {
   def main(args: Array[String]): Unit = {
     // Step 1: 初始化 Spark 上下文和会话
@@ -23,7 +29,7 @@ object MainApp {
       .getOrCreate()
 
     // Step 2: 获取所有 JSON 文件的路径 (使用绝对路径)
-    val resourcePath = new File("D:\\Code\\OtherProject\\cs5488_g6\\SparkDataPipeline\\src\\main\\resources\\test_input")
+    val resourcePath = new File(Config.inputPath)
     val jsonFiles = resourcePath.listFiles.filter(_.getName.endsWith(".json"))
 
     // Step 3: 将处理每个 JSON 文件的操作并行执行
